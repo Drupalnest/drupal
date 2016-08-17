@@ -1,0 +1,243 @@
+<?php
+/**
+ * @file
+ * Code for the Ueapi view.
+ */
+/**
+ * Implementation of hook_views_query_alter
+ * @param type $view
+ * @param type $query 
+ */
+ 
+
+ 
+
+function ueapi_view_views_query_alter(&$view, &$query) {
+
+  if ($view->name == 'ueapi_view') {
+
+   
+  }
+}
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function ueapi_view_url_outbound_alter(&$path, &$options, $original_path) {
+  
+}
+/**
+ * Implements hook_views_pre_execute().
+ */
+function ueapi_view_views_pre_execute(&$view){
+	
+	
+	if ($view->name == 'ueapi_view') {
+		$url = '';
+		
+		if($_GET['EventSource']){
+			$url .= 'EventSource=' . $_GET['EventSource'] . '&';
+		}
+		if($_GET['EventLocation']){
+			$url .= 'EventLocation=' . $_GET['EventLocation'] . '&';
+			
+		}
+		
+		if($_GET['eventStartDate']){
+			$url .= 'eventStartDate=' . $_GET['eventStartDate'] . '&';
+		}
+		if($_GET['eventEndDate']){
+			$url .= 'eventEndDate=' . $_GET['eventEndDate'] . '&';
+		}
+		
+		/*if($_GET['EventStartDate']){
+			$url .= 'EventStartDate=' . $_GET['EventStartDate'] . '&';
+		}
+		
+		if($_GET['eventStartDate']['date']){
+			$url .= 'eventStartDate=' . $_GET['eventStartDate']['date'] . '&';
+		}
+		if($_GET['eventEndDate']['date']){
+			$url .= 'eventEndDate=' . $_GET['eventEndDate']['date'] . '&';
+		}
+*/
+	
+	$view->query->options['json_file'] = 'https://developer-sit.etc.uspto.gov/ue-api/v1/events/search' . $url;
+	}
+
+	
+}
+
+
+
+
+
+function ueapi_view_block_views($form, &$form_state){
+	
+	
+	drupal_add_css(drupal_get_path('module', 'ueapi_view') . '/css/ueapi_view.css');
+	
+	 $form['#prefix'] = '<div class="filterblock">';
+  $form['#suffix'] = '</div>';
+	$form['#method'] = 'get';
+	
+	$date = format_date(strtotime($_GET['EventStartDate']['date']), 'custom', 'Y-m-d H:i:s');
+ //EventStartDate
+ $form['EventStartDate'] = array(
+    '#type' => 'date_popup',
+ '#default_value' => $_GET['EventStartDate']['date'],
+ '#prefix' => '<div class="textf">',
+   '#suffix' => '</div>', 
+ '#title' => t('EventStartDate'),
+ '#date_format'   => 'm-d-Y',
+ '#default_value' => $date,
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+  
+  
+  
+  $date = format_date(strtotime($_GET['eventEndDate']['date']), 'custom', 'Y-m-d H:i:s');
+ //eventEndDate
+ $form['eventEndDate'] = array(
+    '#type' => 'date_popup',
+ '#default_value' => $_GET['eventEndDate']['date'],
+ '#prefix' => '<div class="textf">',
+   '#suffix' => '</div>', 
+ '#title' => t('eventEndDate'),
+ '#date_format'   => 'm-d-Y',
+ '#default_value' => $date,
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
+	$form['eventStartDate'] = array(
+    '#type' => 'date_popup',
+	'#prefix' => '<div class="col-md-2 ">',
+  	'#suffix' => '</div>', 
+	'#title' => t('From'),
+	'#date_format'   => 'm/d/Y',
+	
+	'#default_value' => date("m/d/Y"),
+    
+  );
+	
+
+	
+	  //EventEndDate
+	$form['eventEndDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => 'MM/DD/YYYY',
+	//#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+	'#title' => t('To'),
+	'#date_format'   => 'm/d/Y',
+    '#value' => $form_state['input']['EventStartDate'],
+	'#default_value' => variable_get('EventStartDate', 'test'),
+	
+  );
+  */
+  /* drupal_http_request object 
+  
+ 'POST', // HTTP Request Type
+    'data' => $data, // Parameters
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+  );
+  $result = drupal_http_request('http://localhost/local.json', $options); // Make request
+  var_dump($result);
+  
+  */
+  
+  
+      //EventType
+	$form['EventType'] = array(
+    '#type' => 'select',
+	'#title' => t('What kind of event?'),
+	'#options' => array('Training','Public event', 'Meeting'),
+	//'#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $form_state['input']['EventLocation'],
+  );
+	//EventLocation
+	$form['EventLocation'] = array(
+    '#type' => 'select',
+	'#options' => array( 'Madison','Alexandria VA',  'Washington DC' ),
+	'#title' => t('Where?'),
+	//'#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET["EventLocation"],
+  );
+  
+ 
+ 
+  
+   $form['submit_button'] = array(
+   
+    '#type' => 'submit',
+   '#attributes' => array('class' => array('icon icon-search icon-inverse','style' => 'position: absolute; left: 50px; right: 0; top: 0; bottom: 0; border: none; opacity: 0; width: 100%;')),
+    '#value' => t('Filter events &nbsp;'),
+  );
+
+
+   return $form;
+}
+
+/**
+* Implements hook_block_info().
+
+*/
+function ueapi_view_theme() {
+  return array(
+    'ueapi_view_output' => array(
+      'variables' => array(
+        'title' => NULL,
+        'content' => NULL,
+        'popular_content' => NULL,
+       ),
+      'template' => 'templates/ueapi_view--block',
+    ),
+  );
+}
+function ueapi_view_block_info() {
+  $blocks = array();
+  $blocks['ueapi_view_block'] = array(
+    'info' => t('Ueapi view block'),
+  );
+  return $blocks;
+}
+/**
+* Implements hook_block_view().
+*/
+function ueapi_view_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'ueapi_view_block':
+      $block['subject'] = '';
+      $block['content'] = drupal_get_form('ueapi_view_block_views');
+      break;
+  }
+  return $block;
+}
+
+
+function ueapi_view_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'ueapi_view'),
+    'template path' => drupal_get_path('module', 'ueapi_view').'/templates',
+  );
+}
+/*
+function ueapi_view_cron {
+	$request = drupal_http_request('http:/localhost/local.json');
+return drupal_json_decode($request->data);
+}
+*/

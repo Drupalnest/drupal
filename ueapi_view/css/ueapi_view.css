@@ -1,0 +1,85 @@
+.filterblock{
+	widgth:100%;
+}
+.textf{
+float:left;
+width:20%;
+padding: 0 5px;
+margin:0 5px;
+}
+.textf .control-label{font-weight: normal;}
+
+.textf .form-item-eventstartdate-date .control-label{display:none;}
+.textfsubmit{
+float:left;
+width:20%;
+padding: 0 5px;
+margin:25px 5px 5px 5px;
+}
+.edit-fromdate-datepicker-popup-0 {display:none}
+.form-item-eventstartdate-date .control-label{display:none;}
+#edit-fromdate > div > label{display:none;}
+#edit-eventenddate > div > label {display:none}
+#edit-submit-button{margin-top:29px; margin-left:-12px;}
+#ueapi-view-block-views > div > div:nth-child(1) > div > div > label{display:block;}
+#ueapi-view-block-views > div > div:nth-child(2) > div > div > label{display:block;}
+#edit-eventstartdate-datepicker-popup-0{ margin:0px;width:125px;}
+#edit-eventenddate-datepicker-popup-0{margin-left:20px;width:150px;    background: url(../images/icon-calendar.png) #fff no-repeat 95% 45%;
+    padding-right: 30px; }
+#ueapi-view-block-views > div > div:nth-child(2) > div > div{
+	    margin-left: -107px;
+}
+
+
+#ueapi-view-block-views > div > div:nth-child(4) > div{
+	margin-left:-67px;
+}
+#ueapi-view-block-views > div > div:nth-child(3) > div > label{
+	margin-left: -150px;
+}
+#edit-eventtype{
+	margin-left: -150px;
+}
+#edit-eventlocation{
+	margin-left: -45px;
+}
+#ueapi-view-block-views > div > div:nth-child(4) > div > label{
+	margin-left: -45px;
+}
+#block-system-main > div > div.view-header > p{
+	font-weight: 600;
+    font-size: 28px;
+}
+
+#ueapi-view-block-views > div > div:nth-child(2) > div > div > label{
+	margin-left:20px;
+}
+.scrollable_div{
+	overflow: auto; max-height: 500px; border-top: none;
+}
+#edit-eventstartdate-datepicker-popup-0{
+	    background: url(../images/icon-calendar.png) #fff no-repeat 95% 45%;
+    padding-right: 30px;
+}
+
+.distri_column1 {width:30%;margin-right:10px; padding-right:30px;}
+.distri_column2 {width:30%;}
+.distri_column3 {width: 10%;}
+.distri_column4 {width:10%;}
+.distri_column5 {width:15%;}
+
+
+tr.odd td, tr.even td {
+  padding: 0.3em;
+}
+
+tr.odd {
+background: #FFFFFF;
+}
+
+tr.even {
+background: #EEE;
+}
+.ueapi{
+	overflow: auto; max-height: 500px; border-top: none;
+}

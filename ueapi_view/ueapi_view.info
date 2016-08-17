@@ -1,0 +1,8 @@
+name = Ueapi view
+description = Ueapi view Custom
+core = 7.x
+package = Custom module
+version = 7.x-1.0
+
+project path = sites/all/modules/custom
+configure = admin/config/administration/ueapi_view

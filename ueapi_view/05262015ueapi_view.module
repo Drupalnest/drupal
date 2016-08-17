@@ -1,0 +1,217 @@
+<?php
+/**
+ * @file
+ * Code for the Ueapi view.
+ */
+/**
+ * Implementation of hook_views_query_alter
+ * @param type $view
+ * @param type $query 
+ */
+function ueapi_view_views_query_alter(&$view, &$query) {
+
+  if ($view->name == 'ueapi_view') {
+
+   
+  }
+}
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function ueapi_view_url_outbound_alter(&$path, &$options, $original_path) {
+  
+}
+/**
+ * Implements hook_views_pre_execute().
+ */
+function ueapi_view_views_pre_execute(&$view){
+	
+	
+	if ($view->name == 'ueapi_view') {
+		$url = '';
+		if($_GET['EventSource']){
+			$url .= 'EventSource=' . $_GET['EventSource'] . '&';
+		}
+		if($_GET['EventLocation']){
+			$url .= 'EventLocation=' . $_GET['EventLocation'] . '&';
+		}
+		/*if($_GET['EventStartDate']){
+			$url .= 'EventStartDate=' . $_GET['EventStartDate'] . '&';
+		}*/
+		
+		if($_GET['fromDate[date]']){
+			$url .= 'fromDate[date]=' . $_GET['fromDate[date]'] . '&';
+		}
+		if($_GET['toDate[date]']){
+			$url .= 'toDate[date]=' . $_GET['toDate[date]'] . '&';
+		}
+		
+		
+		
+		
+	$view->query->options['json_file'] = 'https://developer-sit.etc.uspto.gov/ue-api/v1/events/search?' . $url;
+	}
+	
+}
+
+
+
+function ueapi_view_block_views($form, &$form_state){
+	
+	drupal_add_js("drupal_add_js(drupal_get_path('module', 'ueapi_view') . '/js/ueapi.js'));");
+	drupal_add_css(drupal_get_path('module', 'ueapi_view') . '/css/ueapi_view.css');
+	 $form['#prefix'] = '<div class="filterblock">';
+  $form['#suffix'] = '</div>';
+	$form['#method'] = 'get';
+	
+	//EventStartDate
+	$form['fromDate'] = array(
+    '#type' => 'date_popup',
+	'#prefix' => '<div class="col-md-2 ">',
+  	'#suffix' => '</div>', 
+	'#title' => t('From'),
+	'#date_format'   => 'm/d/Y'
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+	
+	  //EventEndDate
+	$form['toDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => 'MM/DD/YYYY',
+	//#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+	'#title' => t('To'),
+	'#date_format'   => 'm/d/Y',
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+    //EventType
+	$form['EventType'] = array(
+    '#type' => 'select',
+	'#title' => t('What kind of event?'),
+	//'#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET['EventLocation'],
+  );
+	
+	
+	
+	
+	//EventLocation
+	$form['EventLocation'] = array(
+    '#type' => 'select',
+	'#options' => array('44' => '+44', '45' => '+45'),
+	'#title' => t('Where?'),
+	//'#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-2">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET['EventLocation'],
+  );
+  /*
+    $form['EventSource'] = array(
+    '#type' => 'textfield',
+	'#title' => t('EventSource1'),
+	//'#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-3">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET['EventSource'],
+  );
+	//EventStartDate
+	$form['EventStartDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => 'YYYY-MM-DD',
+	'#prefix' => '<div class="textf">',
+  	'#suffix' => '</div>', 
+	'#title' => t('EventStartDate'),
+	'#date_format'   => 'Y-m-d',
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+  
+  //EventStartDate
+	$form['fromDate'] = array(
+    '#type' => 'date_popup',
+	//'#default_value' => 'MM/DD/YYYY',
+	//#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-3">',
+  	'#suffix' => '</div>', 
+	'#title' => t('EventStartDate'),
+		'#date_format'   => 'm/d/Y'
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+   //EventEndDate
+	$form['toDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => 'MM/DD/YYYY',
+	//#prefix' => '<div class="textf">',
+	'#prefix' => '<div class="col-md-3">',
+  	'#suffix' => '</div>', 
+	'#title' => t('EventEndDate'),
+		'#date_format'   => 'm/d/Y',
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+  
+  
+  */
+  
+   $form['submit_button'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => array('submit-button', 'primary-btn')),
+    '#value' => t('Filter events'),
+  );
+  
+  
+  
+  
+  
+  
+  /*
+	//textf
+	$form['submit_button'] = array(
+    '#type' => 'submit',
+
+	'#prefix' => '<div class="col-md-3">',
+  	'#suffix' => '</div>', 
+    '#value' => t('Filter'),
+  );
+  */
+  return $form;
+}
+
+/**
+* Implements hook_block_info().
+
+*/
+function ueapi_view_theme() {
+  return array(
+    'ueapi_view_output' => array(
+      'variables' => array(
+        'title' => NULL,
+        'content' => NULL,
+        'popular_content' => NULL,
+       ),
+      'template' => 'templates/ueapi_view--block',
+    ),
+  );
+}
+function ueapi_view_block_info() {
+  $blocks = array();
+  $blocks['ueapi_view_block'] = array(
+    'info' => t('Ueapi view block'),
+  );
+  return $blocks;
+}
+/**
+* Implements hook_block_view().
+*/
+function ueapi_view_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'ueapi_view_block':
+      $block['subject'] = '';
+      $block['content'] = drupal_get_form('ueapi_view_block_views');
+      break;
+  }
+  return $block;
+}
+

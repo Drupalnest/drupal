@@ -1,0 +1,172 @@
+<?php
+/**
+ * @file
+ * Code for the Ueapi view.
+ */
+/**
+ * Implementation of hook_views_query_alter
+ * @param type $view
+ * @param type $query 
+ */
+function ueapi_view_views_query_alter(&$view, &$query) {
+//print_r($view->query);
+	//echo "test";
+  //simple example: change the order of the master display
+  //if you want to do it only  on a certain display add something 
+  // like  "&&$view->current_display == 'panel_page_1'"
+  if ($view->name == 'ueapi_view') {
+
+    //to find out what the fieldname ist: use devel and add your desired field as 
+    //first filter ( =>orderby[0]). install devel and uncomment the next line
+    //dpm($view->query->orderby)
+	//print("<pre>"); 
+	//print_r($view->query);
+    //$view->query->orderby[0]['field'] = "CASE FIELD_NAME WHEN 'apple' THEN 1 WHEN 'zebra' THEN 2 WHEN 'banna' THEN 3 ELSE 4 END";
+  }
+}
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function ueapi_view_url_outbound_alter(&$path, &$options, $original_path) {
+  // Always make login/logout links go to the current page.
+  /*switch ($path) {
+    case 'user/logout':
+    case 'user/login':
+      $options['query']['destination'] = $_GET['q'];
+      break;
+  }*/
+	//print_r($original_path);
+}
+/**
+ * Implements hook_views_pre_execute().
+ */
+function ueapi_view_views_pre_execute(&$view){
+	
+	//print("<pre>");
+	//print_r($view->query->options);
+	//exit;
+	if ($view->name == 'ueapi_view') {
+		$url = '';
+		if($_GET['EventSource']){
+			$url .= 'EventSource=' . $_GET['EventSource'] . '&';
+		}
+		if($_GET['EventLocation']){
+			$url .= 'EventLocation=' . $_GET['EventLocation'] . '&';
+		}
+		if($_GET['EventStartDate']['date']){
+			$url .= 'EventStartDate=' . $_GET['EventStartDate']['date'] . '&';
+		}
+		if($_GET['EventEndDate']['date']){
+			$url .= 'EventEndDate=' . $_GET['EventEndDate']['date'] . '&';
+		}
+		//EventEndDate
+	$view->query->options['json_file'] = 'https://developer-sit.etc.uspto.gov/ue-api/v1/events/search?' . $url;
+	//http://rest.wascobake.com/ueapi/events?eventLocaltion=alexandria
+	}
+	
+}
+
+
+/**
+ * Implements hook_block_info().
+ */
+/*function ueapi_view_block_block_info() {
+  $blocks = array();
+  $blocks['ueapi_view_block'] = array(
+    'info' => t('Ueapi view Block'),
+  );
+  
+  return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ */
+/*function ueapi_view_block_view($delta='') {
+  $block = array();
+  
+  switch($delta) {
+    case 'ueapi_view_block' :
+      $block['content'] = "sdfsdfsdfsd";
+      break;
+  }
+  
+  return $block;
+}*/
+
+function ueapi_view_block_views($form, &$form_state){
+	
+	//drupal_add_js("drupal_add_css(drupal_get_path('module', 'custom') . '/css/custom.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));");
+	drupal_add_css(drupal_get_path('module', 'ueapi_view') . '/css/ueapi_view.css');
+	 $form['#prefix'] = '<div class="filterblock">';
+  $form['#suffix'] = '</div>';
+	$form['#method'] = 'get';
+	$form['EventSource'] = array(
+    '#type' => 'textfield',
+	'#title' => t('EventSource'),
+	'#prefix' => '<div class="textf">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET['EventSource'],
+  );
+	//EventLocation
+	$form['EventLocation'] = array(
+    '#type' => 'textfield',
+	'#title' => t('EventLocation'),
+	'#prefix' => '<div class="textf">',
+  	'#suffix' => '</div>', 
+    '#default_value' => $_GET['EventLocation'],
+  );
+	//EventStartDate
+	$form['EventStartDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => $_GET['EventStartDate']['date'],
+	'#prefix' => '<div class="textf">',
+  	'#suffix' => '</div>', 
+	'#title' => t('EventStartDate'),
+	'#date_format'   => 'Y-m-d',
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+	//EventStartDate
+	$form['EventEndDate'] = array(
+    '#type' => 'date_popup',
+	'#default_value' => $_GET['EventEndDate']['date'],
+	'#prefix' => '<div class="textf">',
+  '#suffix' => '</div>', 
+	'#title' => t('EventEndDate'),
+	'#date_format'   => 'Y-m-d',
+    //'#default_value' => $_GET['EventStartDate'],
+  );
+	//textf
+	$form['submit_button'] = array(
+    '#type' => 'submit',
+	'#prefix' => '<div class="textfsubmit">',
+  	'#suffix' => '</div>', 
+    '#value' => t('Filter'),
+  );
+  
+  return $form;
+}
+
+/**
+* Implements hook_block_info().
+*/
+function ueapi_view_block_info() {
+  $blocks = array();
+  $blocks['ueapi_view_block'] = array(
+    'info' => t('Ueapi view block'),
+  );
+  return $blocks;
+}
+/**
+* Implements hook_block_view().
+*/
+function ueapi_view_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'ueapi_view_block':
+      $block['subject'] = '';
+      $block['content'] = drupal_get_form('ueapi_view_block_views');
+      break;
+  }
+  return $block;
+}
+
